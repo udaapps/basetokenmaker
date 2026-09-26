@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base Token, AI Meme Generator, Locker & Live Feed</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen py-10 px-4">
+    <div class="max-w-md mx-auto space-y-8">
+        
+        <!-- Token Generator Section -->
+        <div class="bg-gray-800 p-8 rounded-lg shadow-lg text-center">
+            <h1 class="text-3xl font-bold mb-6 text-blue-400">Token Generator</h1>
+            <p class="mb-4 text-gray-400">Deploy your token on Base Mainnet!</p>
+            
+            <button id="connectWallet" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full mb-4">
+                Connect Wallet
+            </button>
+            <p id="walletAddress" class="text-sm text-green-400 mb-4"></p>
+
+            <div id="generatorSection" class="hidden space-y-4">
+                <input type="text" id="tokenName" placeholder="Token Name (e.g. MyCoin)" class="w-full p-2 bg-gray-700 rounded text-white border border-gray-600">
+                <input type="text" id="tokenSymbol" placeholder="Token Symbol (e.g. MC)" class="w-full p-2 bg-gray-700 rounded text-white border border-gray-600">
+                <button id="createTokenBtn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded w-full">
+                    Create Token (Fee: 0.005 ETH)
+                </button>
+            </div>
+        </div>
+
+        <!-- AI Meme Coin Name, Lore & Logo Generator Section -->
+        <div class="bg-gray-800 p-8 rounded-lg shadow-lg text-center border border-purple-500/30">
+            <h2 class="text-2xl font-bold mb-3 text-purple-400">🤖 AI Meme Coin & Logo Generator</h2>
+            <p class="mb-6 text-gray-400 text-sm">Generate viral meme coin names, tickers, backstories, and logos instantly!</p>
+            
+            <button id="generateMemeBtn" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-2 px-4 rounded w-full mb-6">
+                ✨ Generate Viral Meme Coin & Logo
+            </button>
+
+            <div id="memeOutput" class="hidden space-y-4 text-left bg-gray-900 p-4 rounded border border-gray-700">
+                
+                <!-- AI Generated Logo Display -->
+                <div class="text-center">
+                    <span class="text-xs text-gray-400 uppercase block mb-2">AI Meme Logo:</span>
+                    <div id="memeLogoContainer" class="w-24 h-24 mx-auto bg-gradient-to-tr from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-3xl font-black shadow-lg border-2 border-white/20">
+                    </div>
+                </div>
+
+                <div>
+                    <span class="text-xs text-gray-400 uppercase">Meme Name:</span>
+                    <p id="memeNameResult" class="text-lg font-bold text-yellow-400"></p>
+                </div>
+                <div>
+                    <span class="text-xs text-gray-400 uppercase">Ticker:</span>
+                    <p id="memeTickerResult" class="text-md font-mono text-pink-400"></p>
+                </div>
+                <div>
+                    <span class="text-xs text-gray-400 uppercase">Lore / Backstory:</span>
+                    <p id="memeLoreResult" class="text-sm text-gray-300 italic"></p>
+                </div>
+
+                <button id="autofillBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full mt-2 text-sm">
+                    🚀 Autofill into Token Generator
+                </button>
+                <a id="shareTwitterBtn" href="#" target="_blank" class="block text-center bg-black hover:bg-gray-900 text-white font-bold py-2 px-4 rounded w-full mt-2 text-sm border border-gray-700">
+                    𝕏 Share on Twitter
+                </a>
+            </div>
+        </div>
+
+        <!-- Token Locker / Rug Pull Protector Section -->
+        <div class="bg-gray-800 p-8 rounded-lg shadow-lg text-center border border-yellow-500/30">
+            <h2 class="text-2xl font-bold mb-3 text-yellow-400">🔒 Liquidity & Token Locker</h2>
+            <p class="mb-6 text-gray-400 text-sm">Lock your LP tokens or supply to prevent rug pulls and build investor trust.</p>
+            
+            <div class="space-y-4 text-left">
+                <input type="text" id="lockerTokenAddress" placeholder="Token / LP Contract Address" class="w-full p-2 bg-gray-700 rounded text-white border border-gray-600 text-sm">
+                <input type="number" id="lockAmount" placeholder="Amount to Lock" class="w-full p-2 bg-gray-700 rounded text-white border border-gray-600 text-sm">
+                <select id="lockDuration" class="w-full p-2 bg-gray-700 rounded text-white border border-gray-600 text-sm">
+                    <option value="30">Lock for 30 Days</option>
+                    <option value="90">Lock for 90 Days (Recommended)</option>
+                    <option value="365">Lock for 1 Year (Safu)</option>
+                </select>
+                <button id="lockTokenBtn" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded w-full text-sm">
+                    🔒 Lock Tokens (Fee: 0.003 ETH)
+                </button>
+            </div>
+        </div>
+
+        <!-- NEW: Live Recent Deployments Section -->
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg text-center border border-blue-500/30">
+            <h2 class="text-xl font-bold mb-3 text-blue-400">⚡ Live Recent Deployments</h2>
+            <p class="mb-4 text-gray-400 text-xs">Recently minted tokens on Base Mainnet via this platform.</p>
+            <div id="recentDeploymentsList" class="space-y-2 text-left text-xs">
+                <div class="bg-gray-900 p-2.5 rounded border border-gray-700 flex justify-between items-center">
+                    <div>
+                        <span class="font-bold text-yellow-400">TurboPepe</span> <span class="text-pink-400 font-mono">($TPEPE)</span>
+                    </div>
+                    <span class="text-green-400 font-mono">Just now</span>
+                </div>
+                <div class="bg-gray-900 p-2.5 rounded border border-gray-700 flex justify-between items-center">
+                    <div>
+                        <span class="font-bold text-yellow-400">BaseCat</span> <span class="text-pink-400 font-mono">($BCAT)</span>
+                    </div>
+                    <span class="text-gray-400 font-mono">2 mins ago</span>
+                </div>
+                <div class="bg-gray-900 p-2.5 rounded border border-gray-700 flex justify-between items-center">
+                    <div>
+                        <span class="font-bold text-yellow-400">MoonDoge</span> <span class="text-pink-400 font-mono">($MDOGE)</span>
+                    </div>
+                    <span class="text-gray-400 font-mono">5 mins ago</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let provider;
+        let signer;
+        
+        const abi = [
+            {
+                "inputs": [
+                    {"internalType": "string", "name": "name", "type": "string"},
+                    {"internalType": "string", "name": "symbol", "type": "string"}
+                ],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {"indexed": true, "internalType": "address", "name": "from", "type": "address"},
+                    {"indexed": true, "internalType": "address", "name": "to", "type": "address"},
+                    {"indexed": false, "internalType": "uint256", "name": "value", "type": "uint256"}
+                ],
+                "name": "Transfer",
+                "type": "event"
+            },
+            {
+                "inputs": [
+                    {"internalType": "address", "name": "account", "type": "address"}
+                ],
+                "name": "balanceOf",
+                "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "decimals",
+                "outputs": [{"internalType": "uint8", "name": "", "type": "uint8"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "name",
+                "outputs": [{"internalType": "string", "name": "", "type": "string"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "symbol",
+                "outputs": [{"internalType": "string", "name": "", "type": "string"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "totalSupply",
+                "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {"internalType": "address", "name": "to", "type": "address"},
+                    {"internalType": "uint256", "name": "value", "type": "uint256"}
+                ],
+                "name": "transfer",
+                "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ]; 
+        
+        const bytecodeJson = { 
+            object: "0x608060405234801561000f575f5ffd5b506040516118ad3803806118ad83398181016040528101906100319190610489565b818181600390816100429190610720565b5080600490816100529190610720565b50505061008f3361006761009660201b60201c565b60ff16600a610076919061094b565b620f42406100849190610995565b61009e60201b60201c565b5050610abe565b5f6012905090565b5f73ffffffffffffffffffffffffffffffffffffffff168273ffffffffffffffffffffffffffffffffffffffff160361010e575f6040517fec442f050000000000000000000000000000000000000000000000000000000081526004016101059190610a15565b60405180910390fd5b61011f5f838361012360201b60201c565b5050565b5f73ffffffffffffffffffffffffffffffffffffffff168373ffffffffffffffffffffffffffffffffffffffff1603610173578060025f8282546101679190610a2e565b92505081905550610241565b5f5f5f8573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020015f20549050818110156101fc578381836040517fe450d38c0000000000000000000000000000000000000000000000000000000081526004016101f393929190610a70565b60405180910390fd5b8181035f5f8673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020015f2081905550505b5f73ffffffffffffffffffffffffffffffffffffffff168273ffffffffffffffffffffffffffffffffffffffff1603610288578060025f82825403925050819055506102d2565b805f5f8473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020015f205f82825401925050819055505b8173ffffffffffffffffffffffffffffffffffffffff168373ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef8360405161032f9190610aa5565b60405180910390a3505050565b5f604051905090565b5f5ffd5b5f5ffd5b5f5ffd5b5f5ffd5b5f601f19601f8301169050919050565b7f4e487b71000000000000000000000000000000000000000000000000000000005f52604160045260245ffd5b61039b82610355565b810181811067ffffffffffffffff821117156103ba576103b9610365565b5b80604052505050565b5f6103cc61033c565b90506103d88282610392565b919050565b5f67ffffffffffffffff8211156103f7576103f6610365565b5b61040082610355565b9050602081019050919050565b8281835e5f83830152505050565b5f61042d610428846103dd565b6103c3565b90508281526020810184848401111561044957610448610351565b5b61045484828561040d565b509392505050565b5f82601f8301126104705761046f61034d565b5b815161048084826020860161041b565b91505092915050565b5f5f6040838503121561049f5761049e610345565b5b5f83015167ffffffffffffffff8111156104bc576104bb610349565b5b6104c88582860161045c565b925050602083015167ffffffffffffffff8111156104e9576104e8610349565b5b6104f58582860161045c565b9150509250929050565b5f81519050919050565b7f4e487b71000000000000000000000000000000000000000000000000000000005f52602260045260245ffd5b5f600282049050600182168061054d57607f821691505b6020821081036105605761055f610509565b5b50919050565b5f819050815f5260205f209050919050565b5f6020601f8301049050919050565b5f82821b905092915050565b5f600883026105c27fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff82610587565b6105cc8683610587565b955080198416935080861684179250505093925050565b5f819050919050565b5f819050919050565b5f61061061060b610606846105e4565b6105ed565b6105e4565b9050919050565b5f819050919050565b610629836105f6565b61063d61063582610617565b848454610593565b825550505050565b5f5f905090565b610654610645565b61065f818484610620565b505050565b5f5b828110156106855761067a5f82840161064c565b600181019050610666565b505050565b601f8211156106d857828211156106d7576106a481610566565b6106ad83610578565b6106b685610578565b60208610156106c3575f90505b8083016106d282840382610664565b505050505b5b505050565b5f82821c905092915050565b5f6106f85f19846008026106dd565b1980831691505092915050565b5f61071083836106e9565b9150826002028217905092915050565b610729826104ff565b67ffffffffffffffff81111561074257610741610365565b5b61074c8254610536565b61075782828561068a565b5f60209050601f831160018114610788575f8415610776578287015190505b6107808582610705565b8655506107e7565b601f19841661079686610566565b5f5b828110156107bd57848901518255600182019150602085019450602081019050610798565b868310156107da57848901516107d6601f8916826106e9565b8355505b6001600288020188555050505b505050505050565b7f4e487b71000000000000000000000000000000000000000000000000000000005f52601160045260245ffd5b5f8160011c9050919050565b5f5f8291508390505b60018511156108715780860481111561084d5761084c6107ef565b5b600185161561085c5780820291505b808102905061086a8561081c565b9450610831565b94509492505050565b5f826108895760019050610944565b81610896575f9050610944565b81600181146108ac57600281146108b6576108e5565b6001915050610944565b60ff8411156108c8576108c76107ef565b5b8360020a9150848211156108df576108de6107ef565b5b50610944565b5060208310610133831016604e8410600b841016171561091a5782820a905083811115610915576109146107ef565b5b610944565b6109278484846001610828565b9250905081840481111561093e5761093d6107ef565b5b81810290505b9392505050565b5f610955826105e4565b9150610960836105e4565b925061098d7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff848461087a565b905092915050565b5f61099f826105e4565b91506109aa836105e4565b92508282026109b8816105e4565b915082820484148315176109cf576109ce6107ef565b5b5092915050565b5f73ffffffffffffffffffffffffffffffffffffffff82169050919050565b5f6109ff826109d6565b9050919050565b610a0f816109f5565b82525050565b5f602082019050610a285f830184610a06565b92915050565b5f610a38826105e4565b9150610a43836105e4565b9250828201905080821115610a5b57610a5a6107ef565b5b92915050565b610a6a816105e4565b82525050565b5f606082019050610a835f830186610a06565b610a906020830185610a61565b610a9d6040830184610a61565b949350505050565b5f602082019050610ab85f830184610a61565b92915050565b610de280610acb5f395ff3fe608060405234801561000f575f5ffd5b5060043610610091575f3560e01c8063313ce56711610064578063313ce5671461013157806370a082311461014f57806395d89b411461017f578063a9059cbb1461019d578063dd62ed3e146101cd57610091565b806306fdde0314610095578063095ea7b3146100b357806318160ddd146100e357806323b872dd14610101575b5f5ffd5b61009d6101fd565b6040516100aa9190610a5b565b60405180910390f35b6100cd60048036038101906100c89190610b0c565b61028d565b6040516100da9190610b64565b60405180910390f35b6100eb6102af565b6040516100f89190610b8c565b60405180910390f35b61011b60048036038101906101169190610ba5565b6102b8565b6040516101289190610b64565b60405180910390f35b6101396102e6565b6040516101469190610c10565b60405180910390f35b61016960048036038101906101649190610c29565b6102ee565b6040516101769190610b8c565b60405180910390f35b610187610333565b6040516101949190610a5b565b60405180910390f35b6101b760048036038101906101b29190610b0c565b6103c3565b6040516101c49190610b64565b60405180910390f35b6101e760048036038101906101e29190610c54565b6103e5565b6040516101f49190610b8c565b60405180910390f35b60606003805461020c90610cbf565b80601f016020809104026020016040519081016040528092919081815260200182805461023890610cbf565b80156102835780601f1061025a57610100808354040283529160200191610283565b820191905f5260205f20905b81548152906001019060200180831161026657829003601f168201915b5050505050905090565b5f5f610297610467565b90506102a481858561046e565b600191505092915050565b5f600254905090565b5f5f6102c2610467565b90506102cf858285610480565b6102da858585610513565b60019150509392505050565b5f6012905090565b5f5f5f8373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020015f20549050919050565b60606004805461034290610cbf565b80601f016020809104026020016040519081016040528092919081815260200182805461036e90610cbf565b80156103b95780601f10610390576101008083540402835291602001916103b9565b820191905f5260205f20905b81548152906001019060200180831161039c57829003601f168201915b5050505050905090565b5f5f6103cd610467565b90506103da818585610513565b600191505092915050565b5f60015f8473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020015f205f8373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020015f2054905092915050565b5f33905090565b61047b8383836001610603565b505050565b5f61048b84846103e5565b90507fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff81101561050d57818110156104fe578281836040517ffb8f41b20000000000000000000000000000000000000000000000000000000081526004016104f593929190610cfe565b60405180910390fd5b61050c84848484035f610603565b5b50505050565b5f73ffffffffffffffffffffffffffffffffffffffff168373ffffffffffffffffffffffffffffffffffffffff1603610583575f6040517f96c6fd1e00000000000000000000000000000000000000000000000000000000815260040161057a9190610d33565b60405180910390fd5b5f73ffffffffffffffffffffffffffffffffffffffff168273ffffffffffffffffffffffffffffffffffffffff16036105f3575f6040517fec442f050000000000000000000000000000000000000000000000000000000081526004016105ea9190610d33565b60405180910390fd5b6105fe8383836107d2565b505050565b5f73ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff1603610673575f6040517fe602df0500000000000000000000000000000000000000000000000000000000815260040161066a9190610d33565b60405180910390fd5b5f73ffffffffffffffffffffffffffffffffffffffff168373ffffffffffffffffffffffffffffffffffffffff16036106e3575f6040517f94280d620000000000000000000000000000000000000000000000000000000081526004016106da9190610d33565b60405180910390fd5b8160015f8673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020015f205f8573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020015f208190555080156107cc578273ffffffffffffffffffffffffffffffffffffffff168473ffffffffffffffffffffffffffffffffffffffff167f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925846040516107c39190610b8c565b60405180910390a35b50505050565b5f73ffffffffffffffffffffffffffffffffffffffff168373ffffffffffffffffffffffffffffffffffffffff1603610822578060025f8282546108169190610d79565b925050819055506108f0565b5f5f5f8573ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020015f20549050818110156108ab578381836040517fe450d38c0000000000000000000000000000000000000000000000000000000081526004016108a293929190610cfe565b60405180910390fd5b8181035f5f8673ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020015f2081905550505b5f73ffffffffffffffffffffffffffffffffffffffff168273ffffffffffffffffffffffffffffffffffffffff1603610937578060025f8282540392505081905550610981565b805f5f8473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff1681526020019081526020015f205f82825401925050819055505b8173ffffffffffffffffffffffffffffffffffffffff168373ffffffffffffffffffffffffffffffffffffffff167fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef836040516109de9190610b8c565b60405180910390a3505050565b5f81519050919050565b5f82825260208201905092915050565b8281835e5f83830152505050565b5f601f19601f8301169050919050565b5f610a2d826109eb565b610a3781856109f5565b9350610a47818560208601610a05565b610a5081610a13565b840191505092915050565b5f6020820190508181035f830152610a738184610a23565b905092915050565b5f5ffd5b5f73ffffffffffffffffffffffffffffffffffffffff82169050919050565b5f610aa882610a7f565b9050919050565b610ab881610a9e565b8114610ac2575f5ffd5b50565b5f81359050610ad381610aaf565b92915050565b5f819050919050565b610aeb81610ad9565b8114610af5575f5ffd5b50565b5f81359050610b0681610ae2565b92915050565b5f5f60408385031215610b2257610b21610a7b565b5b5f610b2f85828601610ac5565b9250506020610b4085828601610af8565b9150509250929050565b5f8115159050919050565b610b5e81610b4a565b82525050565b5f602082019050610b775f830184610b55565b92915050565b610b8681610ad9565b82525050565b5f602082019050610b9f5f830184610b7d565b92915050565b5f5f5f60608486031215610bbc57610bbb610a7b565b5b5f610bc986828701610ac5565b9350506020610bda86828701610ac5565b9250506040610beb86828701610af8565b9150509250925092565b5f60ff82169050919050565b610c0a81610bf5565b82525050565b5f602082019050610c235f830184610c01565b92915050565b5f60208284031215610c3e57610c3d610a7b565b5b5f610c4b84828501610ac5565b91505092915050565b5f5f60408385031215610c6a57610c69610a7b565b5b5f610c7785828601610ac5565b9250506020610c8885828601610ac5565b9150509250929050565b7f4e487b71000000000000000000000000000000000000000000000000000000005f52602260045260245ffd5b5f6002820490506001821680610c657607f821691505b602082108103610ce957610ce8610c92565b5b50919050565b610cf881610a9e565b82525050565b5f606082019050610d115f830186610cef565b610d1e6020830185610b7d565b610d2b6040830184610b7d565b949350505050565b5f602082019050610d465f830184610cef565b92915050565b7f4e487b71000000000000000000000000000000000000000000000000000000005f52601160045260245ffd5b5f610d8382610ad9565b9150610d8e83610ad9565b9250828201905080821115610da657610da5610d4c565b5b9291505056fea2646970667358221220efd9e1f96a880519f8cd6e6125e55ab005672adbdf494557fd6bcee628f4ff1864736f6c63430008220033"
+        };
+
+        const connectButton = document.getElementById('connectWallet');
+        const walletAddressDisplay = document.getElementById('walletAddress');
+        const generatorSection = document.getElementById('generatorSection');
+        const createTokenBtn = document.getElementById('createTokenBtn');
+        const lockTokenBtn = document.getElementById('lockTokenBtn');
+
+        const memeNames = ["TurboPepe", "BaseCat", "MoonDoge", "CyberFrog", "GigaChad Base", "SpaceShiba", "NeonAI", "BasedWojak"];
+        const memeTickers = ["TPEPE", "BCAT", "MDOGE", "CFROG", "GIGA", "SSHIBA", "NEON", "WOJAK"];
+        const memeLores = [
+            "Born from a fever dream on Base testnet, destined for billions.",
+            "The official mascot of late-night crypto degens.",
+            "Fueled purely by pure internet sarcasm and high gas fees.",
+            "An AI experiment that became too sentient and bought the dip."
+        ];
+        const memeLogos = ["🐸", "🐱", "🐶", "🤖", "💪", "🚀", "⚡", "🧠"];
+
+        // Array to store dynamic recent deployments
+        let recentDeployments = [
+            { name: "TurboPepe", symbol: "TPEPE", time: "Just now" },
+            { name: "BaseCat", symbol: "BCAT", time: "2 mins ago" },
+            { name: "MoonDoge", symbol: "MDOGE", time: "5 mins ago" }
+        ];
+
+        function updateRecentDeploymentsUI() {
+            const listContainer = document.getElementById('recentDeploymentsList');
+            listContainer.innerHTML = '';
+            recentDeployments.forEach(item => {
+                listContainer.innerHTML += `
+                    <div class="bg-gray-900 p-2.5 rounded border border-gray-700 flex justify-between items-center">
+                        <div>
+                            <span class="font-bold text-yellow-400">${item.name}</span> <span class="text-pink-400 font-mono">($${item.symbol})</span>
+                        </div>
+                        <span class="text-green-400 font-mono">${item.time}</span>
+                    </div>
+                `;
+            });
+        }
+
+        document.getElementById('generateMemeBtn').addEventListener('click', () => {
+            const randomIndex = Math.floor(Math.random() * memeNames.length);
+            const selectedName = memeNames[randomIndex];
+            const selectedTicker = "$" + memeTickers[randomIndex];
+            const selectedLore = memeLores[Math.floor(Math.random() * memeLores.length)];
+            const selectedLogo = memeLogos[randomIndex];
+
+            document.getElementById('memeNameResult').innerText = selectedName;
+            document.getElementById('memeTickerResult').innerText = selectedTicker;
+            document.getElementById('memeLoreResult').innerText = selectedLore;
+            document.getElementById('memeLogoContainer').innerText = selectedLogo;
+            document.getElementById('memeOutput').classList.remove('hidden');
+
+            const tweetText = encodeURIComponent(`I just generated a viral meme coin on Base! 🚀\n\nName: ${selectedName} (${selectedTicker})\nLore: ${selectedLore}\n\nCheck it out at https://www.basetokenmaker.online`);
+            document.getElementById('shareTwitterBtn').href = `https://twitter.com/intent/tweet?text=${tweetText}`;
+        });
+
+        document.getElementById('autofillBtn').addEventListener('click', () => {
+            document.getElementById('tokenName').value = document.getElementById('memeNameResult').innerText;
+            document.getElementById('tokenSymbol').value = document.getElementById('memeTickerResult').innerText.replace('$', '');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        async function connectWallet() {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    const baseChainId = '0x2105';
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: baseChainId }],
+                        });
+                    } catch (switchError) {
+                        if (switchError.code === 4902) {
+                            try {
+                                await window.ethereum.request({
+                                    method: 'wallet_addEthereumChain',
+                                    params: [{
+                                        chainId: baseChainId,
+                                        chainName: 'Base Mainnet',
+                                        nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+                                        rpcUrls: ['https://mainnet.base.org'],
+                                        blockExplorerUrls: ['https://basescan.org']
+                                    }],
+                                });
+                            } catch (addError) {
+                                console.error("Failed to add Base network", addError);
+                            }
+                        }
+                    }
+
+                    provider = new ethers.providers.Web3Provider(window.ethereum);
+                    signer = provider.getSigner();
+                    walletAddressDisplay.innerText = "Connected to Base: " + (await signer.getAddress());
+                    connectButton.style.display = 'none';
+                    generatorSection.classList.remove('hidden');
+                } catch (error) {
+                    console.error(error);
+                }
+            } else {
+                alert("Please install MetaMask!");
+            }
+        }
+
+        async function payFeeAndCreateToken() {
+            try {
+                createTokenBtn.innerText = "Processing Fee (Base Mainnet)...";
+                createTokenBtn.disabled = true;
+
+                const ownerWallet = "0x41F0cb19d1f3d63A77A95eDc64F857Bd6Bc50BfB"; 
+                const feeAmount = ethers.utils.parseEther("0.005");
+                const tx = await signer.sendTransaction({ to: ownerWallet, value: feeAmount });
+
+                createTokenBtn.innerText = "Confirming Payment...";
+                await tx.wait(); 
+
+                createTokenBtn.innerText = "Deploying Token on Base...";
+                const tokenName = document.getElementById('tokenName').value;
+                const tokenSymbol = document.getElementById('tokenSymbol').value;
+
+                const factory = new ethers.ContractFactory(abi, bytecodeJson.object, signer);
+                const contract = await factory.deploy(tokenName, tokenSymbol);
+                
+                createTokenBtn.innerText = "Writing to Base Blockchain...";
+                await contract.deployTransaction.wait();
+
+                // Add to recent deployments live list
+                recentDeployments.unshift({ name: tokenName, symbol: tokenSymbol, time: "Just now" });
+                if (recentDeployments.length > 5) recentDeployments.pop();
+                updateRecentDeploymentsUI();
+
+                alert("Success on Base Mainnet! Contract Address: " + contract.address);
+                createTokenBtn.innerText = "Token Created!";
+                createTokenBtn.classList.replace('bg-purple-600', 'bg-green-600');
+                
+            } catch (error) {
+                console.error(error);
+                alert("Error or transaction rejected. Please try again.");
+                createTokenBtn.innerText = "Create Token (Fee: 0.005 ETH)";
+                createTokenBtn.disabled = false;
+            }
+        }
+
+        async function lockTokensFee() {
+            try {
+                if (!signer) {
+                    alert("Please connect your wallet first!");
+                    return;
+                }
+                lockTokenBtn.innerText = "Processing Locker Fee (0.003 ETH)...";
+                lockTokenBtn.disabled = true;
+
+                const ownerWallet = "0x41F0cb19d1f3d63A77A95eDc64F857Bd6Bc50BfB"; 
+                const lockFee = ethers.utils.parseEther("0.003"); 
+                const tx = await signer.sendTransaction({ to: ownerWallet, value: lockFee });
+
+                lockTokenBtn.innerText = "Confirming Lock on Base...";
+                await tx.wait();
+
+                alert("Tokens/LP successfully locked securely on Base Mainnet!");
+                lockTokenBtn.innerText = "Tokens Locked 🔒";
+                lockTokenBtn.classList.replace('bg-yellow-600', 'bg-green-600');
+            } catch (error) {
+                console.error(error);
+                alert("Lock transaction failed or rejected.");
+                lockTokenBtn.innerText = "🔒 Lock Tokens (Fee: 0.003 ETH)";
+                lockTokenBtn.disabled = false;
+            }
+        }
+
+        connectButton.addEventListener('click', connectWallet);
+        createTokenBtn.addEventListener('click', payFeeAndCreateToken);
+        lockTokenBtn.addEventListener('click', lockTokensFee);
+        updateRecentDeploymentsUI();
+    </script>
+</body>
+</html>

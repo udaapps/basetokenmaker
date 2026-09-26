@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Create a simple ERC-20 token on Base using your own wallet. No seed phrase required." />
+  <title>BaseTokenMaker — Create a Base Token</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body class="bg-slate-950 text-white min-h-screen">
+  <header class="border-b border-white/10 bg-slate-950/90 sticky top-0 z-20 backdrop-blur">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
+      <a href="index.html" class="font-black text-xl tracking-tight">Base<span class="text-blue-400">TokenMaker</span></a>
+      <nav class="hidden md:flex gap-5 text-sm text-slate-300">
+        <a href="#how" class="hover:text-white">How it works</a>
+        <a href="#security" class="hover:text-white">Security</a>
+        <a href="#faq" class="hover:text-white">FAQ</a>
+      </nav>
+      <button id="connectWallet" class="btn-primary">Connect Wallet</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="max-w-6xl mx-auto px-4 pt-16 pb-10 text-center">
+      <span class="pill">Built for Base Mainnet</span>
+      <h1 class="text-4xl md:text-6xl font-black mt-5 leading-tight">Create Your Base Token<br><span class="text-blue-400">in Minutes</span></h1>
+      <p class="mt-5 max-w-2xl mx-auto text-slate-300 text-lg">Launch a simple ERC-20 token on Base without writing code. You review and approve every blockchain transaction in your own wallet.</p>
+      <div class="mt-7 flex flex-wrap justify-center gap-3">
+        <a href="#generator" class="btn-primary px-6 py-3">Create Token</a>
+        <a href="#how" class="btn-secondary px-6 py-3">See How It Works</a>
+      </div>
+      <p class="mt-4 text-sm text-slate-400">No seed phrase required • Wallet-confirmed transactions • Base Mainnet</p>
+    </section>
+
+    <section class="max-w-6xl mx-auto px-4 pb-8">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div class="trust-card">✓ No coding required</div>
+        <div class="trust-card">✓ You control your wallet</div>
+        <div class="trust-card">✓ BaseScan links after deploy</div>
+        <div class="trust-card">✓ Fees shown before action</div>
+      </div>
+    </section>
+
+    <section id="generator" class="max-w-3xl mx-auto px-4 py-10">
+      <div class="panel">
+        <div class="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <p class="eyebrow">TOKEN GENERATOR</p>
+            <h2 class="text-3xl font-bold">Create an ERC-20 Token</h2>
+            <p class="text-slate-400 mt-2">Enter a token name and symbol, then connect MetaMask to Base Mainnet.</p>
+          </div>
+          <span class="pill">Platform fee: 0.005 ETH</span>
+        </div>
+
+        <div id="walletStatus" class="status-box mt-6">Wallet not connected.</div>
+        <div id="generatorSection" class="hidden mt-6 space-y-4">
+          <label class="field-label" for="tokenName">Token name</label>
+          <input type="text" id="tokenName" maxlength="50" placeholder="e.g. My Base Token" class="field" />
+          <label class="field-label" for="tokenSymbol">Token symbol</label>
+          <input type="text" id="tokenSymbol" maxlength="12" placeholder="e.g. MBT" class="field uppercase" />
+          <button id="createTokenBtn" class="btn-primary w-full py-3">Create Token — 0.005 ETH + gas</button>
+          <div class="notice">
+            <strong>Fee disclosure:</strong> the 0.005 ETH platform fee is separate from Base network gas. In this current version, the platform fee transaction is confirmed before the deployment transaction.
+          </div>
+        </div>
+
+        <div id="deployResult" class="hidden mt-6 success-box"></div>
+      </div>
+    </section>
+
+    <section id="how" class="max-w-6xl mx-auto px-4 py-10">
+      <div class="text-center mb-7">
+        <p class="eyebrow">HOW IT WORKS</p>
+        <h2 class="text-3xl font-bold">Three simple steps</h2>
+      </div>
+      <div class="grid md:grid-cols-3 gap-4">
+        <div class="panel"><div class="step">1</div><h3 class="font-bold text-xl mt-4">Configure</h3><p class="text-slate-400 mt-2">Choose your token name and symbol.</p></div>
+        <div class="panel"><div class="step">2</div><h3 class="font-bold text-xl mt-4">Confirm</h3><p class="text-slate-400 mt-2">Review each Base transaction in your wallet before approving it.</p></div>
+        <div class="panel"><div class="step">3</div><h3 class="font-bold text-xl mt-4">Get the contract</h3><p class="text-slate-400 mt-2">Receive the deployed contract address and open it on BaseScan.</p></div>
+      </div>
+    </section>
+
+    <section class="max-w-6xl mx-auto px-4 py-10 grid lg:grid-cols-2 gap-6">
+      <div class="panel border-purple-500/30">
+        <p class="eyebrow text-purple-300">IDEA GENERATOR</p>
+        <h2 class="text-2xl font-bold">Meme Coin Idea Generator</h2>
+        <p class="text-slate-400 mt-2">Generate a name, ticker, short lore and emoji logo concept for creative inspiration.</p>
+        <button id="generateMemeBtn" class="btn-purple w-full mt-5 py-3">✨ Generate Idea</button>
+        <div id="memeOutput" class="hidden mt-5 space-y-3 bg-slate-950/60 rounded-xl p-4 border border-white/10">
+          <div id="memeLogoContainer" class="w-20 h-20 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center text-3xl mx-auto"></div>
+          <div><span class="field-label">Name</span><p id="memeNameResult" class="font-bold text-yellow-300"></p></div>
+          <div><span class="field-label">Ticker</span><p id="memeTickerResult" class="font-mono text-pink-300"></p></div>
+          <div><span class="field-label">Lore</span><p id="memeLoreResult" class="text-slate-300 italic"></p></div>
+          <button id="autofillBtn" class="btn-secondary w-full py-2">Autofill Token Generator</button>
+          <a id="shareTwitterBtn" href="#" target="_blank" rel="noopener noreferrer" class="btn-secondary block text-center w-full py-2">Share on X</a>
+        </div>
+        <p class="text-xs text-slate-500 mt-4">Generated ideas are for creative inspiration only and do not imply value, safety or investment potential.</p>
+      </div>
+
+      <div class="panel border-amber-500/30">
+        <p class="eyebrow text-amber-300">TOKEN / LIQUIDITY LOCKER</p>
+        <h2 class="text-2xl font-bold">Locker — Coming Soon</h2>
+        <p class="text-slate-400 mt-2">The previous page charged a 0.003 ETH fee but did not actually call a locking contract. That payment flow has been disabled in this refactor until a real locker smart contract is connected.</p>
+        <div class="mt-5 notice">A real locker should transfer/escrow the selected token or LP amount into an audited locking contract and enforce the chosen unlock time on-chain.</div>
+        <button class="btn-disabled w-full mt-5 py-3" disabled>🔒 Locker not yet active</button>
+      </div>
+    </section>
+
+    <section id="security" class="max-w-6xl mx-auto px-4 py-10">
+      <div class="panel">
+        <p class="eyebrow">SECURITY & TRANSPARENCY</p>
+        <h2 class="text-3xl font-bold">Your wallet stays under your control</h2>
+        <div class="grid md:grid-cols-2 gap-4 mt-6 text-slate-300">
+          <div class="trust-card">Never enter a seed phrase or private key on this site.</div>
+          <div class="trust-card">Every blockchain transaction should appear in your wallet for approval.</div>
+          <div class="trust-card">Check the network, recipient and amount before confirming any transaction.</div>
+          <div class="trust-card">After deployment, inspect the contract and transaction on BaseScan.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="max-w-6xl mx-auto px-4 py-10">
+      <div class="panel">
+        <div class="flex items-end justify-between gap-4 flex-wrap">
+          <div><p class="eyebrow">DEPLOYMENTS</p><h2 class="text-2xl font-bold">Recent deployments from this browser</h2></div>
+          <span class="text-xs text-slate-500">No fake live feed</span>
+        </div>
+        <div id="recentDeploymentsList" class="mt-5 space-y-2"></div>
+      </div>
+    </section>
+
+    <section id="faq" class="max-w-4xl mx-auto px-4 py-10 pb-20">
+      <div class="text-center mb-7"><p class="eyebrow">FAQ</p><h2 class="text-3xl font-bold">Frequently asked questions</h2></div>
+      <div class="space-y-3">
+        <details class="faq"><summary>Do I need coding knowledge?</summary><p>No. The current generator exposes a simple name-and-symbol flow.</p></details>
+        <details class="faq"><summary>Do you need my seed phrase?</summary><p>No. Never share a seed phrase or private key with any website or person.</p></details>
+        <details class="faq"><summary>What fees apply?</summary><p>The current token generator charges a 0.005 ETH platform fee, plus separate Base network gas for the platform-fee and deployment transactions.</p></details>
+        <details class="faq"><summary>Does creating a token guarantee value or liquidity?</summary><p>No. Creating a token does not guarantee buyers, liquidity, market value or returns.</p></details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-white/10">
+    <div class="max-w-6xl mx-auto px-4 py-8 text-sm text-slate-400">
+      <div class="flex flex-wrap gap-4 mb-4">
+        <a href="security.html" class="hover:text-white">Security</a>
+        <a href="faq.html" class="hover:text-white">FAQ</a>
+        <a href="terms.html" class="hover:text-white">Terms</a>
+        <a href="privacy.html" class="hover:text-white">Privacy</a>
+        <a href="risk-disclaimer.html" class="hover:text-white">Risk Disclaimer</a>
+      </div>
+      <p>BaseTokenMaker provides software tools and does not provide investment, financial or legal advice. Token deployment does not guarantee value, liquidity or returns.</p>
+    </div>
+  </footer>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/contract.js"></script>
+  <script src="assets/js/wallet.js"></script>
+  <script src="assets/js/token.js"></script>
+  <script src="assets/js/meme.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
