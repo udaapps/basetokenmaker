@@ -57,9 +57,7 @@ window.BTM.renderDeployments = function () {
     .map((deployment) => {
       return `
         <div class="deploy-row">
-
           <div>
-
             <strong>
               ${window.BTM.escapeHtml(deployment.name)}
             </strong>
@@ -73,7 +71,6 @@ window.BTM.renderDeployments = function () {
                 deployment.createdAt
               ).toLocaleString()}
             </div>
-
           </div>
 
           <a
@@ -85,7 +82,6 @@ window.BTM.renderDeployments = function () {
           >
             BaseScan ↗
           </a>
-
         </div>
       `;
     })
@@ -267,10 +263,6 @@ document.addEventListener(
         "click",
         () => {
 
-          console.log(
-            "Autofill button clicked"
-          );
-
           const memeName =
             document
               .getElementById(
@@ -304,32 +296,46 @@ document.addEventListener(
               "generator"
             );
 
+
           if (
             !memeName ||
             !memeTicker
           ) {
 
-            alert(
-              "Please click Generate Idea first."
-            );
+            autofillButton.textContent =
+              "Generate an idea first";
+
+            setTimeout(() => {
+
+              autofillButton.textContent =
+                "Autofill Token Generator";
+
+            }, 1800);
 
             return;
           }
+
 
           if (
             !tokenName ||
             !tokenSymbol
           ) {
 
-            alert(
-              "Token Generator fields were not found."
-            );
+            autofillButton.textContent =
+              "Token fields not found";
+
+            setTimeout(() => {
+
+              autofillButton.textContent =
+                "Autofill Token Generator";
+
+            }, 1800);
 
             return;
           }
 
 
-          /* Fill fields */
+          /* Fill Token Generator */
 
           tokenName.value =
             memeName;
@@ -337,8 +343,6 @@ document.addEventListener(
           tokenSymbol.value =
             memeTicker;
 
-
-          /* Fire input events */
 
           tokenName.dispatchEvent(
             new Event(
@@ -359,32 +363,15 @@ document.addEventListener(
           );
 
 
-          /* Make result obvious */
+          /* Clean success feedback */
 
           autofillButton.textContent =
-            "✓ Added: " +
-            memeName +
-            " / " +
-            memeTicker;
+            "✓ Added to Token Generator";
+
+          autofillButton.disabled = true;
 
 
-          autofillButton.style.opacity =
-            "0.8";
-
-
-          /* Confirmation */
-
-          alert(
-            "Added to Token Generator!\n\n" +
-            "Name: " +
-            memeName +
-            "\n" +
-            "Symbol: " +
-            memeTicker
-          );
-
-
-          /* Move to Token Generator */
+          /* Move user to generator */
 
           if (generator) {
 
@@ -396,24 +383,27 @@ document.addEventListener(
           }
 
 
-          /* Focus filled field */
+          /* Focus first field */
 
-          setTimeout(
-            () => {
+          setTimeout(() => {
 
-              tokenName.focus();
+            tokenName.focus();
 
-            },
-            500
-          );
+          }, 500);
+
+
+          /* Restore button */
+
+          setTimeout(() => {
+
+            autofillButton.textContent =
+              "Autofill Token Generator";
+
+            autofillButton.disabled = false;
+
+          }, 2200);
 
         }
-      );
-
-    } else {
-
-      console.error(
-        "Autofill button not found."
       );
 
     }
